@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/counterContainer"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageButton
+        android:id="@+id/positiveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_alignLeft="@+id/counterEditText"
+        android:layout_alignRight="@+id/counterEditText"
+        android:background="?android:attr/selectableItemBackground"
+        android:src="@drawable/up_icon" />
+
+    <EditText
+        android:id="@+id/counterEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_below="@+id/positiveButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginRight="8dp"
+        android:background="@android:color/transparent"
+        android:ems="3"
+        android:focusable="false"
+        android:gravity="center"
+        android:inputType="none"
+        android:maxEms="3"
+        android:maxLength="3"
+        android:minEms="3"
+        android:singleLine="true"
+        android:text="@string/default_count"
+        android:textSize="18sp" />
+
+    <ImageButton
+        android:id="@+id/negativeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_alignLeft="@+id/counterEditText"
+        android:layout_alignRight="@+id/counterEditText"
+        android:layout_below="@+id/counterEditText"
+        android:background="?android:attr/selectableItemBackground"
+        android:src="@drawable/down_icon" />
+
+</RelativeLayout>

@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CounterWidget</string>
+    <string name="default_count">0</string>
+</resources>
