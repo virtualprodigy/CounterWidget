@@ -1,4 +1,4 @@
-package com.virtualprodigyllc.counterwidget;
+package com.virtualprodigy.counterwidget;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+
+import com.virtualprodigyllc.counterwidget.R;
 
 import java.util.Timer;
 import java.util.TimerTask;

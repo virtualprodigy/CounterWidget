@@ -1,4 +1,4 @@
-package com.virtualprodigyllc.counterwidgetsample;
+package com.virtualprodigy.counterwidget;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

@@ -1,4 +1,4 @@
-package com.virtualprodigyllc.counterwidgetsample;
+package com.virtualprodigy.counterwidgetsample;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
