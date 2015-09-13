@@ -8,6 +8,7 @@ Version 1.0
 -Initial upload
 
 Version 2.0
+
 -Updated the library to version 2.0
 -I added in a method to set the value of the counter
 -I also updated the functionally of the timer task to decrease the period between repeats. This allows the long press action to slowly in/decrement the count at first and then speed up to a more rapid pace
