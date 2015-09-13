@@ -30,6 +30,26 @@ public class CounterLayout extends RelativeLayout {
     private int lowerLimit = 0;
 
     private final int halfSecond = 500;
+
+    /**
+     * The timer for long press counting repeat interval
+     */
+    private final long TIMER_REPEAT_INTERVAL_LONG = 200;
+    /**
+     * The timer for long press counting repeat interval
+     */
+    private final long TIMER_REPEAT_INTERVAL_SHORT = 80;
+
+    /**
+     * The timer for long press counting inital delay
+     */
+    private final long TIMER_START_DELAY = 250;
+
+    /**
+     * THis value counts how many times the long press timer has updated the value
+     * reset it to zero when the timer stops
+     */
+    private int timerIterations = 0;
     /**
      * Also long as the user is pushing the button, this flag is set allow long press functionality to begin
      */
@@ -121,7 +141,7 @@ public class CounterLayout extends RelativeLayout {
                             counterText.setText("" + (timerCount + 1));
                              /* the user continues to hold the button it is a long pressed
                             and the counter should increment it's value ever 300ms by 1*/
-                            timeBaseCounting();
+                            timeBaseCounting(TIMER_START_DELAY, TIMER_REPEAT_INTERVAL_LONG);
                         }
 
 
@@ -131,14 +151,14 @@ public class CounterLayout extends RelativeLayout {
                             counterText.setText("" + (timerCount - 1));
                             /* the user continues to hold the button it is a long pressed
                             and the counter should increment it's value ever 300ms by 1*/
-                            timeBaseCounting();
+                            timeBaseCounting(TIMER_START_DELAY, TIMER_REPEAT_INTERVAL_LONG);
                         }
                     }
 
                     return true;
                 case MotionEvent.ACTION_UP:
                     isButtonPressed = false;
-                    stopTimBasedCounting();
+                    stopTimBasedCounting(true);
                     return true;
             }
             return false;
@@ -149,10 +169,10 @@ public class CounterLayout extends RelativeLayout {
     /**
      * This method updates the count on a fixed interval
      */
-    private void timeBaseCounting() {
-        if(timerTask != null){
+    private void timeBaseCounting(final long startDelay, final long repeatInterval) {
+        if (timerTask != null && repeatInterval != TIMER_REPEAT_INTERVAL_SHORT) {
             //clear any possible conflicting counters
-            stopTimBasedCounting();
+            stopTimBasedCounting(true);
         }
 
         timerTask = new Timer();
@@ -168,15 +188,19 @@ public class CounterLayout extends RelativeLayout {
                         updateCountOnUIThread(timerCount);
                     }
 
-                    final long repeatInterval = 200;
-                    final long startDelay = 250;
-
                     timerTask.scheduleAtFixedRate(new TimerTask() {
                         @Override
                         public void run() {
                             timerCount = timerCount + timerFactor;
                             if (timerCount <= upperLimit && timerCount >= lowerLimit) {
                                 updateCountOnUIThread(timerCount);
+                            }
+
+                            if (timerIterations == 10 && repeatInterval != TIMER_REPEAT_INTERVAL_SHORT) {
+                                stopTimBasedCounting(false);
+                                timeBaseCounting(0, TIMER_REPEAT_INTERVAL_SHORT);
+                            } else if (timerIterations < 10) {
+                                timerIterations = timerIterations + 1;
                             }
                         }
                     }, startDelay, repeatInterval);
@@ -187,9 +211,10 @@ public class CounterLayout extends RelativeLayout {
 
     /**
      * This method updates the counter on the ui thread when called from a worker thread
+     *
      * @param value - the value to be displayed
      */
-    private synchronized void updateCountOnUIThread(final int value){
+    private synchronized void updateCountOnUIThread(final int value) {
         counterText.post(new Runnable() {
             @Override
             public void run() {
@@ -199,15 +224,24 @@ public class CounterLayout extends RelativeLayout {
         });
 
     }
+
     /**
      * This method stops the timer that's updating the count on a fixed interval
+     *
+     * @param resetCounts - if true the timerCount and timerIterations are set to zero, otherwise they are unchanged
+     *                    when the timerTask is cancels itself to decrease the length of the delay interval the values
+     *                    of the timerCount and timerIterations should remain unchanged as the timer is in an intermittent state
+     *                    and not truely stopped
      */
-    private void stopTimBasedCounting() {
+    private synchronized void stopTimBasedCounting(boolean resetCounts) {
         if (timerTask != null) {
             timerTask.cancel();
             timerTask.purge();
             timerTask = null;
-            timerCount = 0;
+            if (resetCounts) {
+                timerCount = 0;
+                timerIterations = 0;
+            }
         }
 
     }
@@ -261,6 +295,18 @@ public class CounterLayout extends RelativeLayout {
     public void setCounterLimits(int upperLimit, int lowerLimit) {
         this.upperLimit = upperLimit;
         this.lowerLimit = lowerLimit;
+    }
+
+    /**
+     * Thus method always the counter to be set to an value within the
+     * upperLimit and LowerLimit
+     *
+     * @param value - the numeric value to be displayed in the counter
+     */
+    public void setCounterValue(int value) {
+        if (value <= upperLimit && value >= lowerLimit) {
+            counterText.setText(value + "");
+        }
     }
 
     /**

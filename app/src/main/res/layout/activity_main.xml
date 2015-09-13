@@ -15,6 +15,7 @@
         android:text="@string/hello_world" />
 
     <com.virtualprodigy.counterwidget.CounterLayout
+        android:id="@+id/counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/hello_text" />
