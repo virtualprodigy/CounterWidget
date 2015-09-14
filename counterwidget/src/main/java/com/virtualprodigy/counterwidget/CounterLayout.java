@@ -1,6 +1,8 @@
 package com.virtualprodigy.counterwidget;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +32,11 @@ public class CounterLayout extends RelativeLayout {
     private int lowerLimit = 0;
 
     private final int halfSecond = 500;
+
+    /**
+     * This is the maxium amount of times the long repeat occurs before the repeat delay is shortened
+     */
+    private final int MAX_LONG_REPEATS = 5;
 
     /**
      * The timer for long press counting repeat interval
@@ -105,7 +112,34 @@ public class CounterLayout extends RelativeLayout {
         countDownButton = (ImageButton) findViewById(R.id.negativeButton);
         countDownButton.setOnTouchListener(onTouchListener);
 
+       // counterText.addTextChangedListener(counterTextWatcher);
+
     }
+
+    /**
+     * Prevents the user from enter a value that exceeds the upper/lower limits
+     */
+   final TextWatcher counterTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            if(s != null){
+                int value = Integer.parseInt(s.toString());
+                if(value <= lowerLimit || value >= upperLimit){
+
+                }
+            }
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
     /**
      * Sets a listener to be called with callbacks fromt he counter
@@ -196,10 +230,10 @@ public class CounterLayout extends RelativeLayout {
                                 updateCountOnUIThread(timerCount);
                             }
 
-                            if (timerIterations == 10 && repeatInterval != TIMER_REPEAT_INTERVAL_SHORT) {
+                            if (timerIterations == MAX_LONG_REPEATS && repeatInterval != TIMER_REPEAT_INTERVAL_SHORT) {
                                 stopTimBasedCounting(false);
                                 timeBaseCounting(0, TIMER_REPEAT_INTERVAL_SHORT);
-                            } else if (timerIterations < 10) {
+                            } else if (timerIterations < MAX_LONG_REPEATS) {
                                 timerIterations = timerIterations + 1;
                             }
                         }
@@ -315,6 +349,11 @@ public class CounterLayout extends RelativeLayout {
      * @return If the value can not be parsed or no value is enter, a zero is returned
      */
     public int getCount() {
-        return -1;
+        try {
+            return Integer.parseInt(counterText.getText().toString());
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to counter value", e);
+            return 0;
+        }
     }
 }
